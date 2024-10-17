@@ -1,0 +1,84 @@
+const pool = require('../config/db');
+
+const getAllArticles = async () => {
+    const result = await pool.query('SELECT * FROM articles');
+    return result.rows;
+};
+
+const getArticleById = async (articleId) => {
+    const result = await pool.query('SELECT * FROM articles WHERE id = $1', [articleId]);
+    return result.rows[0];
+};
+
+const createArticle = async (articleData) => {
+    const { title, content, user_id } = articleData;
+    const result = await pool.query(
+        'INSERT INTO articles (title, content, user_id) VALUES ($1, $2, $3) RETURNING *',
+        [title, content, user_id]
+    );
+    return result.rows[0];
+};
+
+const updateArticle = async (articleId, articleData) => {
+    const { title, content } = articleData;
+    const result = await pool.query(
+        'UPDATE articles SET title = $1, content = $2, updated_at = NOW() WHERE id = $3 RETURNING *',
+        [title, content, articleId]
+    );
+    return result.rows[0];
+};
+
+const deleteArticle = async (articleId) => {
+    await pool.query('DELETE FROM articles WHERE id = $1', [articleId]);
+};
+
+const getCommentsForArticle = async (articleId) => {
+    const result = await pool.query('SELECT * FROM article_comments WHERE article_id = $1', [articleId]);
+    return result.rows;
+};
+
+const addCommentToArticle = async (articleId, commentData) => {
+    const { user_id, comment } = commentData;
+    const result = await pool.query(
+        'INSERT INTO article_comments (user_id, article_id, comment) VALUES ($1, $2, $3) RETURNING *',
+        [user_id, articleId, comment]
+    );
+    return result.rows[0];
+};
+
+const getTagsForArticle = async (articleId) => {
+    const result = await pool.query(
+        'SELECT t.name FROM article_tags t INNER JOIN article_tag_relations atr ON t.id = atr.tag_id WHERE atr.article_id = $1',
+        [articleId]
+    );
+    return result.rows;
+};
+
+const addTagToArticle = async (articleId, tagId) => {
+    const result = await pool.query(
+        'INSERT INTO article_tag_relations (article_id, tag_id) VALUES ($1, $2) RETURNING *',
+        [articleId, tagId]
+    );
+    return result.rows[0];
+};
+
+const getArticlesByTag = async (tagId) => {
+    const result = await pool.query(
+        'SELECT a.* FROM articles a INNER JOIN article_tag_relations atr ON a.id = atr.article_id WHERE atr.tag_id = $1',
+        [tagId]
+    );
+    return result.rows;
+};
+
+module.exports = {
+    getAllArticles,
+    getArticleById,
+    createArticle,
+    updateArticle,
+    deleteArticle,
+    getCommentsForArticle,
+    addCommentToArticle,
+    getTagsForArticle,
+    addTagToArticle,
+    getArticlesByTag
+  };

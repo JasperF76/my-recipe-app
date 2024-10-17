@@ -4,9 +4,9 @@ const userModel = require('../models/userModel');
 require('dotenv').config();
 
 const register = async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password, is_admin } = req.body;
     try {
-        const newUser = await userModel.registerUser(username, email, password);
+        const newUser = await userModel.registerUser(username, email, password, is_admin);
         res.status(201).json(newUser);
     } catch (error) {
         res.status(500).json({ error: 'Failed to register user' });
@@ -24,7 +24,24 @@ const login = async (req, res) => {
     }
 };
 
+const followUser = async (req, res) => {
+    const followerId = req.user.id;
+    const followedId = req.params.userId;
+    try {
+        const follow = await userModel.followUser(followerId, followedId);
+
+        if (follow.message) {
+            return res.status(400).json({ error: follow.message });
+        }
+        
+        res.status(201).json(follow);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to follow user' });
+    }
+};
+
 module.exports = {
     register,
-    login
+    login,
+    followUser
 }

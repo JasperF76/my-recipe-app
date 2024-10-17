@@ -109,6 +109,9 @@ const likeRecipe = async (req, res) => {
         const like = await recipeModel.likeRecipe(id, userId);
         res.status(201).json(like);
     } catch (error) {
+        if (error.code === '23505') {
+            return res.status(409).json({ error: 'You have already liked this recipe.' });
+        }
         res.status(500).json({ error: 'Failed to like recipe' });
     }
 };
@@ -120,6 +123,9 @@ const favoriteRecipe = async (req, res) => {
         const favorite = await recipeModel.favoriteRecipe(id, userId);
         res.status(201).json(favorite);
     } catch (error) {
+        if (error.code === '23505') {
+            return res.status(409).json({ error: 'You have already favorited this recipe.' });
+        }
         res.status(500).json({ error: 'Failed to favorite recipe' });
     }
 };
@@ -138,7 +144,7 @@ const getTagsForRecipe = async (req, res) => {
     const { id } = req.params;
     try {
         const tags = await recipeModel.getTagsForRecipe(id);
-        res.statuus(200).json(tags);
+        res.status(200).json(tags);
     } catch (error) {
         res.status(500).json({ error: 'Failed to retrieve tags' });
     }
@@ -151,6 +157,9 @@ const addTagToRecipe = async (req, res) => {
         const newTag = await recipeModel.addTagToRecipe(id, tagId);
         res.satus(201).json(newTag);
     } catch (error) {
+        if (error.code === '23505') {
+            return res.status(409).json({ error: 'This tag has already been added to the recipe.' });
+        }
         res.status(500).json({ error: 'Failed to add tag' });
     }
 };

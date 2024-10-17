@@ -19,18 +19,49 @@ const createArticle = async (articleData) => {
     return result.rows[0];
 };
 
-const updateArticle = async (articleId, articleData) => {
+const updateArticle = async (articleId, articleData, userId = null) => {
     const { title, content } = articleData;
-    const result = await pool.query(
-        'UPDATE articles SET title = $1, content = $2, updated_at = NOW() WHERE id = $3 RETURNING *',
-        [title, content, articleId]
-    );
+
+    let query;
+    let values;
+
+    if (userId) {
+        query = `
+            UPDATE articles
+            SET title = $1, content = $2, updated_at = NOW()
+            WHERE id = $3 AND user_id = $4 RETURNING *
+        `;
+        values = [title, content, articleId, userId];
+    } else {
+        query = `
+            UPDATE articles
+            SET title = $1, content = $2, updated_at = NOW()
+            WHERE id = $3 RETURNING *
+        `;
+        values = [title, content, articleId];
+    }
+
+    const result = await pool.query(query, values);
     return result.rows[0];
 };
 
-const deleteArticle = async (articleId) => {
-    await pool.query('DELETE FROM articles WHERE id = $1', [articleId]);
+
+const deleteArticle = async (articleId, userId = null) => {
+    let query;
+    let values;
+
+    if (userId) {
+        query = 'DELETE FROM articles WHERE id = $1 AND user_id = $2 RETURNING *';
+        values = [articleId, userId];
+    } else {
+        query = 'DELETE FROM articles WHERE id = $1 RETURNING *';
+        values = [articleId];
+    }
+
+    const result = await pool.query(query, values);
+    return result.rowCount > 0;
 };
+
 
 const getCommentsForArticle = async (articleId) => {
     const result = await pool.query('SELECT * FROM article_comments WHERE article_id = $1', [articleId]);
@@ -81,4 +112,4 @@ module.exports = {
     getTagsForArticle,
     addTagToArticle,
     getArticlesByTag
-  };
+};

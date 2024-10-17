@@ -5,7 +5,7 @@ const getAllRecipes = async () => {
     return result.rows;
 };
 
-const getRecipeById = async () => {
+const getRecipeById = async (recipeId) => {
     const result = await pool.query('SELECT * FROM recipes WHERE id = $1', [recipeId]);
     return result.rows[0];
 };
@@ -19,17 +19,45 @@ const createRecipe = async (recipeData) => {
     return result.rows[0];
 };
 
-const updateRecipe = async (recipeId, recipeData) => {
+const updateRecipe = async (recipeId, recipeData, userId = null) => {
     const { title, description, ingredients, instructions, image_url } = recipeData;
-    const result = await pool.query(
-        'UPDATE recipes SET title = $1, description = $2, ingredients = $3, instructions = $4, image_url = $5, updated_at = NOW() WHERE id = $6 RETURNING *',
-        [title, description, ingredients, instructions, image_url, recipeId]
-    );
+    let query;
+    let values;
+
+    if (userId) {
+        query = `
+        UPDATE recipes
+        SET title = $1, description = $2, ingredients = $3, instructions = $4, image_url = $5, updated_at = NOW()
+        WHERE id = $6 AND user_id = $7 RETURNING *
+        `;
+        values = [title, description, ingredients, instructions, image_url, recipeId, userId];
+    } else {
+        query = `
+        UPDATE recipes
+        SET title = $1, description = $2, ingredients = $3, instructions = $4, image_url = $5, updated_at = NOW()
+        WHERE id = $6 RETURNING *
+        `;
+        values = [title, description, ingredients, instructions, image_url, recipeId];
+    }
+
+    const result = await pool.query(query, values);
     return result.rows[0];
 };
 
-const deleteRecipe = async (recipeId) => {
-    await pool.query('DELETE FROM recipes WHERE id = $1', [recipeId]);
+const deleteRecipe = async (recipeId, userId = null) => {
+    let query;
+    let values;
+
+    if (userId) {
+        query = 'DELETE FROM recipes WHERE id = $1 AND user_id = $2 RETURNING *';
+        values = [recipeId, userId];
+    } else {
+        query = 'DELETE FROM recipes WHERE id = $1 RETURNING *';
+        values = [recipeId];
+    }
+
+    const result = await pool.query(query, values);
+    return result.rowCount > 0;
 };
 
 const getCommentsForRecipe = async (recipeId) => {
@@ -117,4 +145,4 @@ module.exports = {
     getFavoritesByUser,
     getTagsForRecipe,
     addTagToRecipe
-  };
+};

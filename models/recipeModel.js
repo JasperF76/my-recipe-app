@@ -6,7 +6,9 @@ const getAllRecipes = async () => {
 };
 
 const getRecipeById = async (recipeId) => {
+    console.log('Fetching recipe with ID:', recipeId);
     const result = await pool.query('SELECT * FROM recipes WHERE id = $1', [recipeId]);
+    console.log('Query result:', result.rows);
     return result.rows[0];
 };
 
@@ -83,20 +85,50 @@ const addReplyToComment = async (commentId, replyData) => {
     return result.rows[0];
 };
 
-const likeRecipe = async (recipeId, userId) => {
-    const result = await pool.query(
-        'INSERT INTO recipe_likes (user_id, recipe_id) VALUES ($1, $2) RETURNING *',
+const toggleLikeRecipe = async (recipeId, userId) => {
+    const checkLike = await pool.query(
+        'SELECT * FROM recipe_likes WHERE user_id = $1 AND recipe_id = $2',
         [userId, recipeId]
     );
-    return result.rows[0];
+
+    if (checkLike.rows.length > 0) {
+        // Unlike the recipe (remove from recipe_likes)
+        const unlikeResult = await pool.query(
+            'DELETE FROM recipe_likes WHERE user_id = $1 AND recipe_id = $2 RETURNING *',
+            [userId, recipeId]
+        );
+        return { message: 'Recipe unliked', unlikeResult: unlikeResult.rows[0] };
+    } else {
+        // Like the recipe (insert into recipe_likes)
+        const likeResult = await pool.query(
+            'INSERT INTO recipe_likes (user_id, recipe_id) VALUES ($1, $2) RETURNING *',
+            [userId, recipeId]
+        );
+        return { message: 'Recipe liked', likeResult: likeResult.rows[0] };
+    }
 };
 
-const favoriteRecipe = async (recipeId, userId) => {
-    const result = await pool.query(
-        'INSERT INTO recipe_favorites (user_id, recipe_id) VALUES ($1, $2) RETURNING *',
+const toggleFavoriteRecipe = async (recipeId, userId) => {
+    const checkFavorite = await pool.query(
+        'SELECT * FROM recipe_favorites WHERE user_id = $1 AND recipe_id = $2',
         [userId, recipeId]
     );
-    return result.rows[0];
+
+    if (checkFavorite.rows.length > 0) {
+        // Unfavorite the recipe (remove from recipe_favorites)
+        const unfavoriteResult = await pool.query(
+            'DELETE FROM recipe_favorites WHERE user_id = $1 AND recipe_id = $2 RETURNING *',
+            [userId, recipeId]
+        );
+        return { message: 'Recipe unfavorited', unfavoriteResult: unfavoriteResult.rows[0] };
+    } else {
+        // Favorite the recipe (insert into recipe_favorites)
+        const favoriteResult = await pool.query(
+            'INSERT INTO recipe_favorites (user_id, recipe_id) VALUES ($1, $2) RETURNING *',
+            [userId, recipeId]
+        );
+        return { message: 'Recipe favorited', favoriteResult: favoriteResult.rows[0] };
+    }
 };
 
 const getFavoritesByUser = async (userId) => {
@@ -123,14 +155,6 @@ const addTagToRecipe = async (recipeId, tagId) => {
     return result.rows[0];
 };
 
-const followUser = async (followerId, followedId) => {
-    const result = await pool.query(
-        'INSERT INTO follows (follower_id, followed_id) VALUES ($1, $2) RETURNING *',
-        [followerId, followedId]
-    );
-    return result.rows[0];
-};
-
 module.exports = {
     getAllRecipes,
     getRecipeById,
@@ -140,8 +164,8 @@ module.exports = {
     getCommentsForRecipe,
     addCommentToRecipe,
     addReplyToComment,
-    likeRecipe,
-    favoriteRecipe,
+    toggleLikeRecipe,
+    toggleFavoriteRecipe,
     getFavoritesByUser,
     getTagsForRecipe,
     addTagToRecipe

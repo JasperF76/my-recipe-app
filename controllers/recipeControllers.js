@@ -12,6 +12,7 @@ const getAllRecipes = async (req, res) => {
 
 const getRecipeById = async (req, res) => {
     const { id } = req.params;
+    console.log('Recipe ID:', id);
     try {
         const recipe = await recipeModel.getRecipeById(id);
         if (!recipe) {

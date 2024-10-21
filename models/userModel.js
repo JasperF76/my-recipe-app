@@ -27,21 +27,27 @@ const loginUser = async (email, password) => {
     return user;
 };
 
-const followUser = async (followerId, followedId) => {
-    const checkExistingFollow = await pool.query(
+const toggleFollowUser = async (followerId, followedId) => {
+    const checkFollow = await pool.query(
         'SELECT * FROM follows WHERE follower_id = $1 AND followed_id = $2',
         [followerId, followedId]
     );
-    
-    if (checkExistingFollow.rows.length > 0) {
-        return { message: 'You are already following this user' };
-    }
 
-    const result = await pool.query(
-        'INSERT INTO follows (follower_id, followed_id) VALUES ($1, $2) RETURNING*',
-        [followerId, followedId]
-    );
-    return result.rows[0];
+    if (checkFollow.rows.length > 0) {
+        // Unfollow the user (remove from follows)
+        const unfollowResult = await pool.query(
+            'DELETE FROM follows WHERE follower_id = $1 AND followed_id = $2 RETURNING *',
+            [followerId, followedId]
+        );
+        return { message: 'User unfollowed', unfollowResult: unfollowResult.rows[0] };
+    } else {
+        // Follow the user (insert into follows)
+        const followResult = await pool.query(
+            'INSERT INTO follows (follower_id, followed_id) VALUES ($1, $2) RETURNING *',
+            [followerId, followedId]
+        );
+        return { message: 'User followed', followResult: followResult.rows[0] };
+    }
 };
 
-module.exports = { registerUser, loginUser, followUser };
+module.exports = { registerUser, loginUser, toggleFollowUser };

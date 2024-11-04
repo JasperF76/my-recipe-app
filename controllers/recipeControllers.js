@@ -141,19 +141,21 @@ const getTagsForRecipe = async (req, res) => {
     }
 };
 
-const addTagToRecipe = async (req, res) => {
+const toggleTagForRecipe = async (req, res) => {
     const userId = req.user.id;
-    const { id } = req.params;
+    const { id: recipeId } = req.params;
     const { tagId } = req.body;
-    
+
     try {
-        const newTag = await recipeModel.addTagToRecipe(id, tagId);
-        res.satus(201).json(newTag);
-    } catch (error) { 
-        if (error.code === '23505') {
-            return res.status(409).json({ error: 'This tag has already been added to the recipe.' });
+        const toggleResult = await recipeModel.toggleTagForRecipe(recipeId, tagId);
+
+        if (toggleResult.message === 'Tag removed from recipe') {
+            res.status(200).json({ message: 'Tag removed from recipe' });
+        } else {
+            res.status(201).json({ message: 'Tag added to recipe', data: toggleResult });
         }
-        res.status(500).json({ error: 'Failed to add tag' });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to toggle tag' });
     }
 };
 
@@ -169,5 +171,5 @@ module.exports = {
     toggleLikeRecipe,
     toggleFavoriteRecipe,
     getTagsForRecipe,
-    addTagToRecipe
+    toggleTagForRecipe
 };

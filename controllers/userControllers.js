@@ -24,6 +24,17 @@ const login = async (req, res) => {
     }
 };
 
+const getFavoritesByUser = async (req, res) => {
+    const userId = req.user.id;
+    try {
+        const favorites = await userModel.getFavoritesByUser(userId);
+        res.status(200).json(favorites);
+    } catch (error) {
+        console.log(error);        
+        res.status(500).json({ error: 'Failed to retrieve favorites' });
+    }
+};
+
 const followUser = async (req, res) => {
     const followerId = req.user.id;
     const followedId = req.params.userId;
@@ -33,7 +44,7 @@ const followUser = async (req, res) => {
         if (follow.message) {
             return res.status(400).json({ error: follow.message });
         }
-        
+
         res.status(201).json(follow);
     } catch (error) {
         res.status(500).json({ error: 'Failed to follow user' });
@@ -43,5 +54,6 @@ const followUser = async (req, res) => {
 module.exports = {
     register,
     login,
+    getFavoritesByUser,
     followUser
 }

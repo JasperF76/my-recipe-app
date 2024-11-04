@@ -103,11 +103,11 @@ const addReplyToComment = async (req, res) => {
     }
 };
 
-const likeRecipe = async (req, res) => {
+const toggleLikeRecipe = async (req, res) => {
     const userId = req.user.id;
     const { id } = req.params;
     try {
-        const like = await recipeModel.likeRecipe(id, userId);
+        const like = await recipeModel.toggleLikeRecipe(id, userId);
         res.status(201).json(like);
     } catch (error) {
         if (error.code === '23505') {
@@ -117,27 +117,17 @@ const likeRecipe = async (req, res) => {
     }
 };
 
-const favoriteRecipe = async (req, res) => {
+const toggleFavoriteRecipe = async (req, res) => {
     const userId = req.user.id;
     const { id } = req.params;
     try {
-        const favorite = await recipeModel.favoriteRecipe(id, userId);
+        const favorite = await recipeModel.toggleFavoriteRecipe(id, userId);
         res.status(201).json(favorite);
     } catch (error) {
         if (error.code === '23505') {
             return res.status(409).json({ error: 'You have already favorited this recipe.' });
         }
         res.status(500).json({ error: 'Failed to favorite recipe' });
-    }
-};
-
-const getFavoritesByUser = async (req, res) => {
-    const userId = req.user.id;
-    try {
-        const favorites = await recipeModel.getFavoritesByUser(userId);
-        res.status(200).json(favorites);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to retrieve favorites' });
     }
 };
 
@@ -153,11 +143,13 @@ const getTagsForRecipe = async (req, res) => {
 
 const addTagToRecipe = async (req, res) => {
     const userId = req.user.id;
-    const { id, tagId } = req.params;
+    const { id } = req.params;
+    const { tagId } = req.body;
+    
     try {
         const newTag = await recipeModel.addTagToRecipe(id, tagId);
         res.satus(201).json(newTag);
-    } catch (error) {
+    } catch (error) { 
         if (error.code === '23505') {
             return res.status(409).json({ error: 'This tag has already been added to the recipe.' });
         }
@@ -174,9 +166,8 @@ module.exports = {
     getCommentsForRecipe,
     addCommentToRecipe,
     addReplyToComment,
-    likeRecipe,
-    favoriteRecipe,
-    getFavoritesByUser,
+    toggleLikeRecipe,
+    toggleFavoriteRecipe,
     getTagsForRecipe,
     addTagToRecipe
 };

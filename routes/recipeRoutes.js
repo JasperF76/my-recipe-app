@@ -13,9 +13,8 @@ router.post('/recipes/:id/comments', authenticateUser, recipeController.addComme
 router.post('/recipes/comments/:commentId/replies', authenticateUser, recipeController.addReplyToComment); // Add reply to a comment
 
 // Likes and Favorites
-router.post('/recipes/:id/like', authenticateUser, recipeController.likeRecipe); // Like a recipe
-router.post('/recipes/:id/favorite', authenticateUser, recipeController.favoriteRecipe); // Favorite a recipe
-router.get('/users/:userId/favorites', authenticateUser, recipeController.getFavoritesByUser); // Get a user's favorite recipes
+router.post('/recipes/:id/like', authenticateUser, recipeController.toggleLikeRecipe); // Like a recipe
+router.post('/recipes/:id/favorite', authenticateUser, recipeController.toggleFavoriteRecipe); // Favorite a recipe
 
 // Tags
 router.get('/recipes/:id/tags', recipeController.getTagsForRecipe); // Get tags for a recipe

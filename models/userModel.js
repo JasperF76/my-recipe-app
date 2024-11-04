@@ -27,6 +27,14 @@ const loginUser = async (email, password) => {
     return user;
 };
 
+const getFavoritesByUser = async (userId) => {
+    const result = await pool.query(
+        'SELECT * FROM recipes INNER JOIN recipe_favorites ON recipes.id = recipe_favorites.recipe_id WHERE recipe_favorites.user_id = $1',
+        [userId]
+    );
+    return result.rows;
+};
+
 const toggleFollowUser = async (followerId, followedId) => {
     const checkFollow = await pool.query(
         'SELECT * FROM follows WHERE follower_id = $1 AND followed_id = $2',
@@ -50,4 +58,4 @@ const toggleFollowUser = async (followerId, followedId) => {
     }
 };
 
-module.exports = { registerUser, loginUser, toggleFollowUser };
+module.exports = { registerUser, loginUser, getFavoritesByUser, toggleFollowUser };

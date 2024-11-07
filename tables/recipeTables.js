@@ -6,7 +6,7 @@ const createRecipeTables = async () => {
       id SERIAL PRIMARY KEY,
       user_id UUID REFERENCES users(id) ON DELETE CASCADE,
       title VARCHAR(255) NOT NULL,
-      description TEXT,
+      description TEXT NOT NULL,
       ingredients TEXT NOT NULL,
       instructions TEXT NOT NULL,
       image_url VARCHAR(255),

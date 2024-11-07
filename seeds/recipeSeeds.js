@@ -1,12 +1,12 @@
 const seedRecipes = async () => {
     const insertRecipes = `
-      INSERT INTO recipes (user_id, title, ingredients, instructions, image_url)
+      INSERT INTO recipes (user_id, title, description, ingredients, instructions, image_url)
       VALUES 
-        ((SELECT id FROM users WHERE username = 'john_doe'), 'Spaghetti Carbonara', 'Spaghetti, Eggs, Parmesan, Bacon, Garlic', 
+        ((SELECT id FROM users WHERE username = 'john_doe'), 'Spaghetti Carbonara', 'A classic Italian pasta dish', 'Spaghetti, Eggs, Parmesan, Bacon, Garlic', 
         'Boil spaghetti. In a separate pan, cook bacon until crispy. Toss cooked spaghetti with egg mixture and bacon.', 
         'https://example.com/images/spaghetti-carbonara.jpg'),
         
-        ((SELECT id FROM users WHERE username = 'jane_smith'), 'Vegan Avocado Toast', 'Avocado, Bread, Olive oil, Lemon, Salt, Pepper', 
+        ((SELECT id FROM users WHERE username = 'jane_smith'), 'Vegan Avocado Toast', 'A simple and delicious vegan breakfast', 'Avocado, Bread, Olive oil, Lemon, Salt, Pepper', 
         'Toast bread slices. Mash avocado and season with lemon, salt, and pepper. Spread avocado mixture on toast and drizzle with olive oil.', 
         'https://example.com/images/avocado-toast.jpg');
     `;

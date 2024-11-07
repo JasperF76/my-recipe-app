@@ -13,7 +13,7 @@ const getRecipeById = async (recipeId) => {
 };
 
 const createRecipe = async (recipeData) => {
-    const { title, description, ingredients, instructions, category, image_url, user_id } = recipeData;
+    const { title, description, ingredients, instructions, image_url, user_id } = recipeData;
     const result = await pool.query(
         'INSERT INTO recipes (title, description, ingredients, instructions, image_url, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING*',
         [title, description, ingredients, instructions, image_url, user_id]

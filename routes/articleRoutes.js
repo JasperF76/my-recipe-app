@@ -13,6 +13,6 @@ router.get('/articles/:id/comments', articleController.getCommentsForArticle);
 router.post('/articles/:id/comments', authenticateUser, articleController.addCommentToArticle);
 router.get('/articles/:id/tags', articleController.getTagsForArticle);
 router.post('/articles/:id/tags', authenticateUser, articleController.addTagToArticle);
-router.get('/articles/tags/:tag', articleController.getArticlesByTag);
+router.get('/articles/tags/:tagName', articleController.getArticlesByTag);
 
 module.exports = router;

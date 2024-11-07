@@ -170,6 +170,20 @@ const toggleTagForRecipe = async (recipeId, tagId) => {
     }
 };
 
+const getRecipesByTag = async (tagName) => {
+    const result = await pool.query(
+        `
+        SELECT recipes.*
+        FROM recipes
+        INNER JOIN recipe_tag_relations rtr ON recipes.id = rtr.recipe_id
+        INNER JOIN recipe_tags t ON rtr.tag_id = t.id
+        WHERE t.name ILIKE $1
+        `,
+        [tagName]
+    );
+    return result.rows;
+};
+
 module.exports = {
     getAllRecipes,
     getRecipeById,
@@ -183,5 +197,6 @@ module.exports = {
     toggleFavoriteRecipe,
     getFavoritesByUser,
     getTagsForRecipe,
-    toggleTagForRecipe
+    toggleTagForRecipe,
+    getRecipesByTag
 };

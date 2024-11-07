@@ -93,10 +93,16 @@ const addTagToArticle = async (articleId, tagId) => {
     return result.rows[0];
 };
 
-const getArticlesByTag = async (tagId) => {
+const getArticlesByTag = async (tagName) => {
     const result = await pool.query(
-        'SELECT a.* FROM articles a INNER JOIN article_tag_relations atr ON a.id = atr.article_id WHERE atr.tag_id = $1',
-        [tagId]
+        `
+        SELECT a.*
+        FROM articles a
+        INNER JOIN article_tag_relations atr ON a.id = atr.article_id
+        INNER JOIN article_tags t ON atr.tag_id = t.id
+        WHERE t.name ILIKE $1
+        `,
+        [tagName]
     );
     return result.rows;
 };

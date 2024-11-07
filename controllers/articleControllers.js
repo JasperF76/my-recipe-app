@@ -110,9 +110,9 @@ const addTagToArticle = async (req, res) => {
 };
 
 const getArticlesByTag = async (req, res) => {
-    const { tagId } = req.params;
+    const { tagName } = req.params;
     try {
-        const articles = await articleModel.getArticlesByTag(tagId);
+        const articles = await articleModel.getArticlesByTag(tagName);
         res.status(200).json(articles);
     } catch (error) {
         res.status(500).json({ error: 'Failed to retrieve articles' });

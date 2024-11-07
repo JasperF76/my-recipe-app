@@ -19,9 +19,12 @@ router.post('/recipes/:id/favorite', authenticateUser, recipeController.toggleFa
 // Tags
 router.get('/recipes/:id/tags', recipeController.getTagsForRecipe); // Get tags for a recipe
 router.post('/recipes/:id/tags', authenticateUser, recipeController.toggleTagForRecipe); // Add tags to a recipe
+router.get('/recipes/tags/:tagName', recipeController.getRecipesByTag);
+
+// User Actions
+router.post('/recipes', authenticateUser, recipeController.createRecipe); // Create a recipe
 
 // Admin actions (these should stay at the bottom for clarity and security)
-router.post('/recipes', authenticateUser, recipeController.createRecipe); // Create a recipe
 router.put('/recipes/:id', authenticateUser, authorizeAdmin, recipeController.updateRecipe); // Admin update
 router.delete('/recipes/:id', authenticateUser, authorizeAdmin, recipeController.deleteRecipe); // Admin delete
 

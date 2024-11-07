@@ -159,6 +159,17 @@ const toggleTagForRecipe = async (req, res) => {
     }
 };
 
+const getRecipesByTag = async (req, res) => {
+    const { tagName } = req.params;
+
+    try {
+        const recipes = await recipeModel.getRecipesByTag(tagName);
+        res.status(200).json(recipes);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to retrieve recipes by tag' });
+    }
+};
+
 module.exports = {
     getAllRecipes,
     getRecipeById,
@@ -171,5 +182,6 @@ module.exports = {
     toggleLikeRecipe,
     toggleFavoriteRecipe,
     getTagsForRecipe,
-    toggleTagForRecipe
+    toggleTagForRecipe,
+    getRecipesByTag
 };

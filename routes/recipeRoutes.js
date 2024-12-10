@@ -24,8 +24,8 @@ router.get('/recipes/tags/:tagName', recipeController.getRecipesByTag);
 // User Actions
 router.post('/recipes', authenticateUser, recipeController.createRecipe); // Create a recipe
 
-// Admin actions (these should stay at the bottom for clarity and security)
-router.put('/recipes/:id', authenticateUser, recipeController.updateRecipe); // Admin update
-router.delete('/recipes/:id', authenticateUser, recipeController.deleteRecipe); // Admin delete
+// The logic behind these routes allows admin access to their functions.
+router.put('/recipes/:id', authenticateUser, recipeController.updateRecipe);
+router.delete('/recipes/:id', authenticateUser, recipeController.deleteRecipe);
 
 module.exports = router;

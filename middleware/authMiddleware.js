@@ -11,9 +11,17 @@ const authenticateUser = (req, res, next) => {
     try {
         const actualToken = token.split(' ')[1];
         const decoded = jwt.verify(actualToken, process.env.JWT_SECRET);
-        req.user = decoded;
+
+        console.log('Decoded token:', decoded);
+        
+        req.user = {
+            id: decoded.id,
+            username: decoded.username,
+            is_admin: decoded.is_admin || false
+        };
         next();
     } catch (error) {
+        console.error('Token verification error:', error);
         res.status(401).json({ error: 'Invalid token' });
     }
 };

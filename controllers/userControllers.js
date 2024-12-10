@@ -17,7 +17,12 @@ const login = async (req, res) => {
     const { email, password } = req.body;
     try {
         const user = await userModel.loginUser(email, password);
-        const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign(
+            { id: user.id, username: user.username, is_admin: user.is_admin },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
         res.status(200).json({ token });
     } catch (error) {
         res.status(401).json({ error: 'Invalid email or password' });
@@ -30,7 +35,7 @@ const getFavoritesByUser = async (req, res) => {
         const favorites = await userModel.getFavoritesByUser(userId);
         res.status(200).json(favorites);
     } catch (error) {
-        console.log(error);        
+        console.log(error);
         res.status(500).json({ error: 'Failed to retrieve favorites' });
     }
 };

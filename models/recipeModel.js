@@ -43,6 +43,11 @@ const updateRecipe = async (recipeId, recipeData, userId = null, is_admin = fals
     }
 
     const result = await pool.query(query, values);
+
+    if (result.rows.length === 0) {
+        throw new Error('Recipe not found');
+    }
+    
     return result.rows[0];
 };
 

@@ -40,16 +40,24 @@ const createRecipe = async (req, res) => {
 const updateRecipe = async (req, res) => {
     const userId = req.user.id;
     const is_admin = req.user.is_admin;
-    const { id } = req.params;
+
     try {
-        const updatedRecipe = await recipeModel.updateRecipe(id, req.body, userId, is_admin);
-        if (!updatedRecipe) {
-            return res.status(403).json({ error: 'Not authorized to update this recipe' });
+        const recipeId = parseInt(req.params.id, 10);
+        console.log({ recipeId, body: req.body, userId, is_admin });
+        
+
+        const updatedRecipe = await recipeModel.updateRecipe(recipeId, req.body, userId, is_admin);
+
+        if (!updateRecipe) {
+            return res.status(404).json({ error: 'Recipe not found' });
         }
+
         res.status(200).json(updatedRecipe);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'Failed to update recipe' });
     }
+    
 };
 
 const deleteRecipe = async (req, res) => {

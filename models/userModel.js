@@ -58,4 +58,11 @@ const toggleFollowUser = async (followerId, followedId) => {
     }
 };
 
-module.exports = { registerUser, loginUser, getFavoritesByUser, toggleFollowUser };
+const getAllUsers = async () => {
+    const result = await pool.query(
+        'SELECT id, username, email, is_admin FROM users ORDER by username ASC'
+    );
+    return result.rows;
+};
+
+module.exports = { registerUser, loginUser, getFavoritesByUser, toggleFollowUser, getAllUsers };

@@ -39,9 +39,10 @@ const createRecipe = async (req, res) => {
 
 const updateRecipe = async (req, res) => {
     const userId = req.user.id;
+    const is_admin = req.user.is_admin;
     const { id } = req.params;
     try {
-        const updatedRecipe = await recipeModel.updateRecipe(id, req.body, userId);
+        const updatedRecipe = await recipeModel.updateRecipe(id, req.body, userId, is_admin);
         if (!updatedRecipe) {
             return res.status(403).json({ error: 'Not authorized to update this recipe' });
         }
@@ -53,9 +54,10 @@ const updateRecipe = async (req, res) => {
 
 const deleteRecipe = async (req, res) => {
     const userId = req.user.id;
+    const is_admin = req.user.is_admin;
     const { id } = req.params;
     try {
-        const deleted = await recipeModel.deleteRecipe(id, userId);
+        const deleted = await recipeModel.deleteRecipe(id, userId, is_admin);
         if (!deleted) {
             return res.status(403).json({ error: 'Not authorized to delete this recipe' });
         }

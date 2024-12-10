@@ -21,12 +21,12 @@ const createRecipe = async (recipeData) => {
     return result.rows[0];
 };
 
-const updateRecipe = async (recipeId, recipeData, userId = null) => {
+const updateRecipe = async (recipeId, recipeData, userId = null, is_admin = false) => {
     const { title, description, ingredients, instructions, image_url } = recipeData;
     let query;
     let values;
 
-    if (userId) {
+    if (!is_admin) {
         query = `
         UPDATE recipes
         SET title = $1, description = $2, ingredients = $3, instructions = $4, image_url = $5, updated_at = NOW()
@@ -46,11 +46,11 @@ const updateRecipe = async (recipeId, recipeData, userId = null) => {
     return result.rows[0];
 };
 
-const deleteRecipe = async (recipeId, userId = null) => {
+const deleteRecipe = async (recipeId, userId = null, is_admin = false) => {
     let query;
     let values;
 
-    if (userId) {
+    if (!is_admin) {
         query = 'DELETE FROM recipes WHERE id = $1 AND user_id = $2 RETURNING *';
         values = [recipeId, userId];
     } else {

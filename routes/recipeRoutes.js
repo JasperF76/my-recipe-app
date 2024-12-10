@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const recipeController = require('../controllers/recipeControllers');
 const authenticateUser = require('../middleware/authMiddleware');
-const authorizeAdmin = require('../middleware/adminMiddleware');
+// const authorizeAdmin = require('../middleware/adminMiddleware');
 
 router.get('/recipes', recipeController.getAllRecipes); // General route
 router.get('/recipes/:id', recipeController.getRecipeById); // Specific ID route
@@ -25,7 +25,7 @@ router.get('/recipes/tags/:tagName', recipeController.getRecipesByTag);
 router.post('/recipes', authenticateUser, recipeController.createRecipe); // Create a recipe
 
 // Admin actions (these should stay at the bottom for clarity and security)
-router.put('/recipes/:id', authenticateUser, authorizeAdmin, recipeController.updateRecipe); // Admin update
-router.delete('/recipes/:id', authenticateUser, authorizeAdmin, recipeController.deleteRecipe); // Admin delete
+router.put('/recipes/:id', authenticateUser, recipeController.updateRecipe); // Admin update
+router.delete('/recipes/:id', authenticateUser, recipeController.deleteRecipe); // Admin delete
 
 module.exports = router;

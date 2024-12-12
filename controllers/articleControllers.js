@@ -100,11 +100,18 @@ const getTagsForArticle = async (req, res) => {
 
 const addTagToArticle = async (req, res) => {
     const userId = req.user.id;
-    const { id, tagId } = req.params;
+    const { id } = req.params;
+    const { tagId } = req.body;
     try {
+        console.log('Adding tag:', { articleId: id, tagId, userId });
+        
         const newTag = await articleModel.addTagToArticle(id, tagId);
         res.status(201).json(newTag);
     } catch (error) {
+        if (error.message === 'Tag already added') {
+            return res.status(409).json({ error: 'Tag already added' });
+        }
+        console.error('Error adding tag:', error);
         res.status(500).json({ error: 'Failed to add tag' });
     }
 };

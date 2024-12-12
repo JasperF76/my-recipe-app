@@ -86,11 +86,18 @@ const getTagsForArticle = async (articleId) => {
 };
 
 const addTagToArticle = async (articleId, tagId) => {
-    const result = await pool.query(
+    try {
+        const result = await pool.query(
         'INSERT INTO article_tag_relations (article_id, tag_id) VALUES ($1, $2) RETURNING *',
         [articleId, tagId]
     );
     return result.rows[0];
+} catch (error) {
+    if (error.code === '23505') {
+        throw new Error('Tag already added');
+    }
+    throw error;
+}
 };
 
 const getArticlesByTag = async (tagName) => {

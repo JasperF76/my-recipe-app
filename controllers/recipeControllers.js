@@ -152,20 +152,20 @@ const getTagsForRecipe = async (req, res) => {
 };
 
 const toggleTagForRecipe = async (req, res) => {
-    const userId = req.user.id;
     const { id: recipeId } = req.params;
     const { tagId } = req.body;
 
     try {
-        const toggleResult = await recipeModel.toggleTagForRecipe(recipeId, tagId);
+        const result = await recipeModel.toggleTagForRecipe(recipeId, tagId);
 
-        if (toggleResult.message === 'Tag removed from recipe') {
-            res.status(200).json({ message: 'Tag removed from recipe' });
-        } else {
-            res.status(201).json({ message: 'Tag added to recipe', data: toggleResult });
+        if (result === 'Tag removed from recipe') {
+            return res.status(200).json({ message: result });
         }
+
+        return res.status(201).json({ message: 'Tag added to recipe', tag: result });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to toggle tag' });
+        console.error('Error toggling tag for recipe:', error);
+        res.status(500).json({ error: 'Failed to toggle tag for recipe' });
     }
 };
 

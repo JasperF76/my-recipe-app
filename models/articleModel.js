@@ -85,19 +85,25 @@ const getTagsForArticle = async (articleId) => {
     return result.rows;
 };
 
-const addTagToArticle = async (articleId, tagId) => {
-    try {
-        const result = await pool.query(
-        'INSERT INTO article_tag_relations (article_id, tag_id) VALUES ($1, $2) RETURNING *',
+const toggleTagForArticle = async (articleId, tagId) => {
+    const checkRelation = await pool.query(
+        'SELECT * FROM article_tag_relations WHERE article_id = $1 AND tag_id =$2',
         [articleId, tagId]
     );
-    return result.rows[0];
-} catch (error) {
-    if (error.code === '23505') {
-        throw new Error('Tag already added');
+
+    if (checkRelation.rows.length > 0) {
+        await pool.query(
+            'DELETE FROM article_tag_relations WHERE article_id = $1 AND tag_id = $2 RETURNING *',
+            [articleId, tagId]
+        );
+        return 'Tag removed from article';
+    } else {
+        const result = await pool.query(
+            'INSERT INTO article_tag_relations (article_id, tag_id) VALUES ($1, $2) RETURNING *',
+            [articleId, tagId]
+        );
+        return result.rows[0];
     }
-    throw error;
-}
 };
 
 const getArticlesByTag = async (tagName) => {
@@ -123,6 +129,6 @@ module.exports = {
     getCommentsForArticle,
     addCommentToArticle,
     getTagsForArticle,
-    addTagToArticle,
+    toggleTagForArticle,
     getArticlesByTag
 };

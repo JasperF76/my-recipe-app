@@ -98,21 +98,21 @@ const getTagsForArticle = async (req, res) => {
     }
 };
 
-const addTagToArticle = async (req, res) => {
-    const userId = req.user.id;
+const toggleTagForArticle = async (req, res) => {
     const { id } = req.params;
     const { tagId } = req.body;
+
     try {
-        console.log('Adding tag:', { articleId: id, tagId, userId });
-        
-        const newTag = await articleModel.addTagToArticle(id, tagId);
-        res.status(201).json(newTag);
-    } catch (error) {
-        if (error.message === 'Tag already added') {
-            return res.status(409).json({ error: 'Tag already added' });
+        const result = await articleModel.toggleTagForArticle(id, tagId);
+
+        if (result === 'Tag removed from article') {
+            return res.status(200).json({ message: result });
         }
-        console.error('Error adding tag:', error);
-        res.status(500).json({ error: 'Failed to add tag' });
+
+        return res.status(201).json({ message: 'Tag added to article', tag: result });
+    } catch (error) {
+        console.error('Error toggling tag for article:', error);
+        res.status(500).json({ error: 'Failed to toggle tag for article' });
     }
 };
 
@@ -135,6 +135,6 @@ module.exports = {
     getCommentsForArticle,
     addCommentToArticle,
     getTagsForArticle,
-    addTagToArticle,
+    toggleTagForArticle,
     getArticlesByTag
 };

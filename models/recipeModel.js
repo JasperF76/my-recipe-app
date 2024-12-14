@@ -47,7 +47,7 @@ const updateRecipe = async (recipeId, recipeData, userId = null, is_admin = fals
     if (result.rows.length === 0) {
         throw new Error('Recipe not found');
     }
-    
+
     return result.rows[0];
 };
 
@@ -160,13 +160,11 @@ const toggleTagForRecipe = async (recipeId, tagId) => {
 
     if (checkResult.rows.length > 0) {
         await pool.query(
-            'DELETE FROM recipe_tag_relations WHERE recipe_id = $1 AND tag_id = $2',
+            'DELETE FROM recipe_tag_relations WHERE recipe_id = $1 AND tag_id = $2 RETURNING *',
             [recipeId, tagId]
         );
-        return { message: 'Tag removed from recipe' };
-
+        return 'Tag removed from recipe';
     } else {
-
         const result = await pool.query(
             'INSERT INTO recipe_tag_relations (recipe_id, tag_id) VALUES ($1, $2) RETURNING *',
             [recipeId, tagId]

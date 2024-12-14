@@ -12,7 +12,7 @@ router.delete('/articles/:id', authenticateUser, authorizeAdmin, articleControll
 router.get('/articles/:id/comments', articleController.getCommentsForArticle);
 router.post('/articles/:id/comments', authenticateUser, articleController.addCommentToArticle);
 router.get('/articles/:id/tags', articleController.getTagsForArticle);
-router.post('/articles/:id/tags', authenticateUser, articleController.addTagToArticle);
+router.post('/articles/:id/tags', authenticateUser, authorizeAdmin, articleController.toggleTagForArticle);
 router.get('/articles/tags/:tagName', articleController.getArticlesByTag);
 
 module.exports = router;

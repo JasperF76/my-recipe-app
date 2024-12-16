@@ -5,6 +5,7 @@ const authenticateUser = require('../middleware/authMiddleware');
 // const authorizeAdmin = require('../middleware/adminMiddleware');
 
 router.get('/recipes', recipeController.getAllRecipes); // General route
+router.get('/recipes/search', recipeController.searchRecipes);
 router.get('/recipes/:id', recipeController.getRecipeById); // Specific ID route
 
 // Comments and Replies

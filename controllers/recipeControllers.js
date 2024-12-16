@@ -24,6 +24,28 @@ const getRecipeById = async (req, res) => {
     }
 };
 
+const searchRecipes = async (req, res) => {
+    const { query } = req.query;
+
+    if (!query || query.trim() === '') {
+        console.log('Search query is missing or empty');        
+        return res.status(400).json({ error: 'Search query cannot be empty' });
+    }
+
+    try {     
+        const results = await recipeModel.searchRecipes(query); 
+        
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'No recipes with that keyword found' });
+        }
+
+        res.status(200).json(results);
+    } catch (error) {
+        console.error('Error searching recipes:', error);
+        res.status(500).json({ error: 'Failed to retrieve recipe' });
+    }
+};
+
 const createRecipe = async (req, res) => {
     const userId = req.user.id;
     try {
@@ -183,6 +205,7 @@ const getRecipesByTag = async (req, res) => {
 module.exports = {
     getAllRecipes,
     getRecipeById,
+    searchRecipes,
     createRecipe,
     updateRecipe,
     deleteRecipe,

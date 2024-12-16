@@ -12,6 +12,22 @@ const getRecipeById = async (recipeId) => {
     return result.rows[0];
 };
 
+const searchRecipes = async (query) => {
+    try {       
+        const result = await pool.query(
+            `
+        SELECT * FROM recipes
+        WHERE title ILIKE $1 OR description ILIKE $1 OR ingredients ILIKE $1
+        `,
+            [`%${query}%`]
+        );      
+        return result.rows;
+    } catch (error) {
+        console.error('Error in searchRecipes model:', error);
+        throw error;
+    }
+};
+
 const createRecipe = async (recipeData) => {
     const { title, description, ingredients, instructions, image_url, user_id } = recipeData;
     const result = await pool.query(
@@ -190,6 +206,7 @@ const getRecipesByTag = async (tagName) => {
 module.exports = {
     getAllRecipes,
     getRecipeById,
+    searchRecipes,
     createRecipe,
     updateRecipe,
     deleteRecipe,

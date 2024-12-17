@@ -10,6 +10,24 @@ const getArticleById = async (articleId) => {
     return result.rows[0];
 };
 
+const searchArticles = async (query) => {
+    try {
+        console.log('Executing search query for articles with:', query);
+        const result = await pool.query(
+            `
+            SELECT * FROM articles
+            WHERE title ILIKE $1 OR content ILIKE $1
+            `,
+            [`%${query}%`]
+        );
+        console.log('Query results for articles:', result.rows);
+        return result.rows;
+    } catch (error) {
+        console.error('Error in searchArticles model:', error);
+        throw error;
+    }
+};
+
 const createArticle = async (articleData) => {
     const { title, content, user_id } = articleData;
     const result = await pool.query(
@@ -123,6 +141,7 @@ const getArticlesByTag = async (tagName) => {
 module.exports = {
     getAllArticles,
     getArticleById,
+    searchArticles,
     createArticle,
     updateArticle,
     deleteArticle,

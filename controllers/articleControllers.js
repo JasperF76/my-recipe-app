@@ -23,6 +23,30 @@ const getArticleById = async (req, res) => {
     }
 };
 
+const searchArticles = async (req, res) => {
+    const { query } = req.query;
+
+    if (!query || query.trim() === '') {
+        console.log('Search query is missing or empty for articles');
+        return res.status(400).json({ error: 'Search query cannot be empty' });
+    }
+
+    try {
+        console.log('Search query for articles:', query);
+        const results = await articleModel.searchArticles(query);
+        console.log('Search results for articles:', results);
+
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'No articles with that keyword found' });
+        }
+
+        res.status(200).json(results);
+    } catch (error) {
+        console.error('Error searching articles:', error);
+        res.status(500).json({ error: 'Failed to retrieve articles' });
+    }
+};
+
 const createArticle = async (req, res) => {
     const userId = req.user.id;
     try {
@@ -129,6 +153,7 @@ const getArticlesByTag = async (req, res) => {
 module.exports = {
     getAllArticles,
     getArticleById,
+    searchArticles,
     createArticle,
     updateArticle,
     deleteArticle,

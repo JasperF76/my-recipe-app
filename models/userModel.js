@@ -58,6 +58,27 @@ const toggleFollowUser = async (followerId, followedId) => {
     }
 };
 
+const toggleTagFollow = async (userId, tagId) => {
+    const checkFollow = await pool.query(
+        'SELECT * FROM tag_follows WHERE user_id = $1 AND tag_id = $2',
+        [userId, tagId]
+    );
+
+    if (checkFollow.rows.length > 0) {
+        await pool.query(
+            'DELETE FROM tag_follows WHERE user_id = $1 AND tag_id = $2',
+            [userId, tagId]
+        );
+        return 'Tag unfollowed';
+    } else {
+        await pool.query(
+            'INSERT INTO tag_follows (user_id, tag_id) VALUES ($1, $2)',
+            [userId, tagId]
+        );
+        return 'Tag followed';
+    }
+};
+
 const getAllUsers = async () => {
     const result = await pool.query(
         'SELECT id, username, email, is_admin FROM users ORDER by username ASC'
@@ -65,4 +86,4 @@ const getAllUsers = async () => {
     return result.rows;
 };
 
-module.exports = { registerUser, loginUser, getFavoritesByUser, toggleFollowUser, getAllUsers };
+module.exports = { registerUser, loginUser, getFavoritesByUser, toggleFollowUser, toggleTagFollow, getAllUsers };

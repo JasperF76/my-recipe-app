@@ -6,8 +6,9 @@ const authorizeAdmin = require('../middleware/adminMiddleware');
 
 router.post('/register', userController.register);
 router.post('/login', userController.login);
+router.get('/users', authenticateUser, authorizeAdmin, userController.getAllUsers);
 router.post('/users/:userId/follow', authenticateUser, userController.followUser);
 router.get('/users/:userId/favorites', authenticateUser, userController.getFavoritesByUser); // Get a user's favorite recipes
-router.get('/users', authenticateUser, authorizeAdmin, userController.getAllUsers);
+router.post('/tags/:tagId/follow', authenticateUser, userController.toggleTagFollow);
 
 module.exports = router;

@@ -5,6 +5,7 @@ const authenticateUser = require('../middleware/authMiddleware');
 const authorizeAdmin = require('../middleware/adminMiddleware');
 
 router.get('/articles', articleController.getAllArticles);
+router.get('/articles/search', articleController.searchArticles);
 router.get('/articles/:id', articleController.getArticleById);
 router.post('/articles', authenticateUser, authorizeAdmin, articleController.createArticle);
 router.put('/articles/:id', authenticateUser, authorizeAdmin, articleController.updateArticle);

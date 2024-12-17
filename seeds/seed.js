@@ -2,14 +2,16 @@ const pool = require('../config/db');
 const { seedUsers } = require('./userSeeds');
 const { seedRecipes } = require('./recipeSeeds');
 const { seedArticles } = require('./articleSeeds');
+const { seedTagFollows } = require('./tagFollowSeeds');
 
 const { createUserTables } = require('../tables/userTables');
 const { createRecipeTables } = require('../tables/recipeTables');
 const { createArticleTables } = require('../tables/articleTables');
+const { createTagFollowsTable } = require('../tables/tagFollowsTable.js');
 
 const dropTables = `
   DROP TABLE IF EXISTS article_comments, article_tag_relations, article_tags, articles,
-  recipe_replies, recipe_comments, recipe_likes, recipe_favorites, follows, recipe_tag_relations, recipes, users CASCADE;
+  recipe_replies, recipe_comments, recipe_likes, recipe_favorites, follows, tag_follows, recipe_tag_relations, recipes, users CASCADE;
 `;
 
 const seedData = async () => {
@@ -22,12 +24,13 @@ const seedData = async () => {
     await createUserTables();
     await createRecipeTables();
     await createArticleTables();
+    await createTagFollowsTable();
     console.log('Tables created successfully');
 
     // Clear the tables before inserting seed data
     const clearTables = `
       TRUNCATE TABLE article_comments, article_tag_relations, article_tags, articles,
-      recipe_replies, recipe_comments, recipe_likes, recipe_favorites, follows, recipe_tag_relations, recipes, users RESTART IDENTITY CASCADE;
+      recipe_replies, recipe_comments, recipe_likes, recipe_favorites, follows, tag_follows, recipe_tag_relations, recipes, users RESTART IDENTITY CASCADE;
     `;
     await pool.query(clearTables);
 
@@ -36,6 +39,23 @@ const seedData = async () => {
     await pool.query(insertUsers);
     await pool.query(insertFollows);
     console.log('Users and Follows seeded successfully');
+
+    // Seed articles and related data
+    const {
+      insertArticles,
+      insertArticleTags,
+      insertArticleTagRelations,
+      insertArticleComments
+    } = await seedArticles();
+    await pool.query(insertArticles);
+    await pool.query(insertArticleTags);
+    await pool.query(insertArticleTagRelations);
+    await pool.query(insertArticleComments);
+    console.log('Articles and related data seeded successfully');
+
+    const { insertTagFollows } = await seedTagFollows();
+    await pool.query(insertTagFollows);
+    console.log('Tag Follows seeded successfully');
 
     // Seed recipes and related data
     const {
@@ -55,19 +75,6 @@ const seedData = async () => {
     await pool.query(insertRecipeTags);
     await pool.query(insertRecipeTagRelations);
     console.log('Recipes and related data seeded successfully');
-
-    // Seed articles and related data
-    const {
-      insertArticles,
-      insertArticleTags,
-      insertArticleTagRelations,
-      insertArticleComments
-    } = await seedArticles();
-    await pool.query(insertArticles);
-    await pool.query(insertArticleTags);
-    await pool.query(insertArticleTagRelations);
-    await pool.query(insertArticleComments);
-    console.log('Articles and related data seeded successfully');
 
   } catch (error) {
     console.error('Error inserting seed data', error);

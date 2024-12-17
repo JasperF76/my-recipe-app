@@ -12,7 +12,7 @@ const createUserTables = async () => {
       is_admin BOOLEAN DEFAULT false,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
+    )
   `;
 
   const followsTable = `
@@ -22,7 +22,7 @@ const createUserTables = async () => {
       followed_id UUID REFERENCES users(id) ON DELETE CASCADE,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       CONSTRAINT unique_follow UNIQUE (follower_id, followed_id)
-    );
+    )
   `;
 
   try {

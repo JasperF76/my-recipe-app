@@ -56,6 +56,23 @@ const followUser = async (req, res) => {
     }
 };
 
+const toggleTagFollow = async (req, res) => {
+    const userId = req.user.id;
+    const { tagId } = req.params;
+
+    try {
+        const result = await userModel.toggleTagFollow(userId, tagId);
+
+        if (result === 'Tag unfollowed') {
+            return res.status(200).json({ message: 'Tag unfollowed successfully' });
+        }
+        return res.status(201).json({ message: 'Tag followed successfully' });
+    } catch (error) {
+        console.error('Error toggling tag follow:', error);
+        res.status(500).json({ error: 'Failed to toggle tag follow' });
+    }
+};
+
 const getAllUsers = async (req, res) => {
     try {
         const users = await userModel.getAllUsers();
@@ -71,5 +88,6 @@ module.exports = {
     login,
     getFavoritesByUser,
     followUser,
+    toggleTagFollow,
     getAllUsers
 }
